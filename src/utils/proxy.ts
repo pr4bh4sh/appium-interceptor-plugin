@@ -26,7 +26,6 @@ const MOCK_BACKEND_HTML = `<html><head><title>Appium Mock</title></head>
 <body style="display:flex;flex-direction:column;align-items:center;justify-content:center">
 <h1>Hurray</h1>
 <p style="font-size:24px">Your device is successfully connected to appium interceptor plugin</p>
-<p style="font-size:24px">Download the certificate <a href="www.google.com">here</a></p>
 </body></html>`;
 
 export function constructURLFromRequest(request: { protocol: string; path: string; host: string }) {
@@ -84,10 +83,6 @@ export function updateRequestBody(ctx: IContext, mockConfig: MockConfig) {
     if (mockConfig.updateRequestBody) {
       postBody = processBody(mockConfig.updateRequestBody, originalBody);
     }
-    if (postBody) {
-      console.log('************* REQUEST BODY **************************');
-      console.log(postBody);
-    }
     ctx.proxyToServerRequest?.setHeader('Content-Length', Buffer.byteLength(postBody));
     ctx.proxyToServerRequest?.write(postBody);
     callback();
@@ -103,7 +98,6 @@ export function updateResponseBody(ctx: IContext, mockConfig: MockConfig) {
   ctx.onResponseEnd((ctx: IContext, callback: OnRequestDataCallback) => {
     const originalResponse = Buffer.concat(responseBodyChunks).toString('utf8');
     let responseBody = mockConfig.responseBody || originalResponse;
-    //console.log(originalResponse);
 
     if (mockConfig.statusCode) {
       ctx.proxyToClientResponse.writeHead(mockConfig.statusCode);
@@ -306,7 +300,6 @@ export function sanitizeMockConfig(config: MockConfig) {
   ].forEach((regexNodePath) => {
     const regexElement = jsonpath.query(config, regexNodePath);
     return regexElement.forEach((ele) => {
-      console.log('00000', ele)
       const isValidRegExp = typeof ele === 'string' && !(parseRegex(ele) instanceof RegExp);
       if (!isValidRegExp) {
         throw new Error(`Invalid Regular expression ${ele} for field ${regexNodePath}`);

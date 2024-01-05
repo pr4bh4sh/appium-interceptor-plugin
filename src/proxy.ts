@@ -15,6 +15,7 @@ import {
 } from './utils/proxy';
 import ResponseDecoder from './response-decoder';
 import { Mock } from './mock';
+import { RequestInterceptor } from './interceptor';
 
 export type ProxyOptions = {
   deviceUDID: string;
@@ -74,6 +75,13 @@ export class Proxy {
       host: '::',
     };
 
+    this.httpProxy.onRequest(
+      RequestInterceptor((requestData: any) => {
+        // console.log('****** REQUEST **********');
+        // console.log(JSON.stringify(requestData, null, 2));
+        // console.log('****************************');
+      })
+    );
     this.httpProxy.onRequest(this._onMockApiRequest.bind(this));
 
     await new Promise((resolve) => {
